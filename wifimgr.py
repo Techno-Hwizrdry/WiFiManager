@@ -1,6 +1,9 @@
+#  Modified by Alexan Mardigian
+
 import network
 import socket
 import ure
+import urllib
 import time
 
 ap_ssid = "WifiManager"
@@ -41,14 +44,14 @@ def get_connection():
             ssid = ssid.decode('utf-8')
             encrypted = authmode > 0
             print("ssid: %s chan: %d rssi: %d authmode: %s" % (ssid, channel, rssi, AUTHMODE.get(authmode, '?')))
-            if encrypted:
-                if ssid in profiles:
+
+            if ssid in profiles:
+                if not encrypted:
+                    connected = do_connect(ssid, None)
+                else:
                     password = profiles[ssid]
                     connected = do_connect(ssid, password)
-                else:
-                    print("skipping unknown encrypted network")
-            else:  # open
-                connected = do_connect(ssid, None)
+
             if connected:
                 break
 
@@ -187,10 +190,10 @@ def handle_configure(client, request):
     # version 1.9 compatibility
     try:
         ssid = match.group(1).decode("utf-8").replace("%3F", "?").replace("%21", "!")
-        password = match.group(2).decode("utf-8").replace("%3F", "?").replace("%21", "!")
+        password = urllib.unquote_plus(match.group(2).decode("utf-8"))
     except Exception:
         ssid = match.group(1).replace("%3F", "?").replace("%21", "!")
-        password = match.group(2).replace("%3F", "?").replace("%21", "!")
+        password = urllib.unquote_plus(match.group(2))
 
     if len(ssid) == 0:
         send_response(client, "SSID must be provided", status_code=400)
