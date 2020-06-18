@@ -257,6 +257,9 @@ def handle_configure(client, request):
 def handle_not_found(client, url):
     send_response(client, "Path not found: {}".format(url), status_code=404)
 
+def close_wifi_ap():
+    stop()
+    wlan_ap.active(False)
 
 def stop():
     global server_socket
