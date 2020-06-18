@@ -209,10 +209,20 @@ def handle_configure(client, request):
                             ESP successfully connected to WiFi network %(ssid)s.
                         </span>
                     </h1>
+                    <h2>
+                        <span style="color: #000000;">
+                            Your ESP IP address is %(ip)s
+                        </span>
+                    </h2>
+                    <h2>
+                        <span style="color: #000000;">
+                            You should set this IP address as static in your router settings.
+                        </span>
+                    </h2>
                     <br><br>
                 </center>
             </html>
-        """ % dict(ssid=ssid)
+        """ % dict(ssid=ssid, ip=wlan_sta.ifconfig()[0])
         send_response(client, response)
         try:
             profiles = read_profiles()
